@@ -1,8 +1,9 @@
-// import React, {useEffect, useState} from "react";
+import React from "react";
+import ProductsUpload from "./ProductsUpload"
 
 const Products = () => {
     return (
-        <h1> bla bla bla</h1>
+        < ProductsUpload />
     )
 }
 
