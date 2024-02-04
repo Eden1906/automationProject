@@ -1,28 +1,51 @@
-import React, {useEffect, useState} from "react";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { collection, addDoc } from "firebase/firestore";
+import { imgDB, txtDB } from '../firebaseConfig'
+import React, { useState } from "react";
 
 const Seller = () => {
 
-    const [productName, setProductName] = useState('')
-    const [productPrice, setProductPrice] = useState('')
-    const [productImg, setProductImg] = useState(null)
-    const [error, setError] = useState('')
-    const types = ['image/png', 'image/jpeg']
+  const [productName, setProductName] = useState('')
+  const [productPrice, setProductPrice] = useState('')
+  const [productImg, setProductImg] = useState(null)
+  const [error, setError] = useState('')
+  const types = ['image/png', 'image/jpeg']
 
-    const productImgHandler = (e) => {
-        let selectedFile = e.target.files[0]
-        if(selectedFile && types.includes(selectedFile.type)) {
-            setProductImg(selectedFile)
-            setError('')
-        } else {
-            setProductImg(null)
-            setError('img not valid')
-        }
-    }
+  const productImgHandler = (e) => {
+      let selectedFile = e.target.files[0]
+      if(selectedFile && types.includes(selectedFile.type)) {
+          setProductImg(selectedFile)
+          setError('')
+      } else {
+          setProductImg(null)
+          setError('image not valid')
+      }
+  }
     
     const addProduct = (e) => {
         e.preventDefault()
-        console.log(productName, productPrice, productImg)
+        const uploadProduct = async () => {
+            const imgRef = ref(imgDB, 'productImages/${productImg.name}')
+            await uploadBytes(imgRef, productImg)
+            const imgUrl = await getDownloadURL(imgRef)
+            try {
+                const docRef = await addDoc(collection(txtDB, "products"), {
+                    name: productName,
+                    price: parseFloat(productPrice),
+                    imageUrl: imgUrl,
+                })
+                setProductName('')
+                setProductPrice('')
+                setProductImg('')
+                setError('')
+            } catch (error) {
+                console.error("error", error)
+                setError('error adding product')
+            }
+        }
+        uploadProduct()
     }
+      
 
 
     return (
