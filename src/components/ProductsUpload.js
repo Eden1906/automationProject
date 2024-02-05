@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {collection, getDocs } from "firebase/firestore";
+import {collection, getDocs, deleteDoc, doc } from "firebase/firestore";
 import { txtDB } from '../firebaseConfig';
 
 
@@ -22,13 +22,24 @@ const ProductsUpload = () => {
         fetchProducts()
     }, [])
 
+    const handleDelete = async (productId) => {
+        try {
+            await deleteDoc(doc(txtDB, "products", productId))
+            setProducts((prevProducts) => prevProducts.filter(product => product.id !== productId))
+        } catch (error) {
+            console.error("error deleting product", error)
+        }
+    }
+
     return (
         <div className="container">
-            <ul>
+            <ul className="product-list">
                 {products.map((product) => (
                     <li key={product.id}>
                         <h3> {product.name} </h3>
-                        <p> price:${product.price}</p>
+                        <p> price: ₪{product.price}</p>
+                        <img src = {product.imageUrl} alt = {product.name} className = "product-image" />
+                        <button onClick={() => handleDelete(product.id)}>delete</button>
                     </li>
                 ))}
             </ul>

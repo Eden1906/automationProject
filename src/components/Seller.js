@@ -25,7 +25,7 @@ const Seller = () => {
     const addProduct = (e) => {
         e.preventDefault()
         const uploadProduct = async () => {
-            const imgRef = ref(imgDB, 'productImages/${productImg.name}')
+            const imgRef = ref(imgDB, 'productImages/' + productImg.name)
             await uploadBytes(imgRef, productImg)
             const imgUrl = await getDownloadURL(imgRef)
             try {
