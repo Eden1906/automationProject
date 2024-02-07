@@ -10,7 +10,11 @@
 }
 
 .product-image {
-  width: 50%;
-  height: 200px;
+  width: 60%;
+  height: 150px;
   object-fit: cover;
+}
+
+.modal-content h2 {
+  font-size: 16px;
 }

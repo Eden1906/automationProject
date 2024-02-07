@@ -54,16 +54,16 @@ const Seller = () => {
             <h2> add products</h2>
             <hr />
             <form autoComplete="off" className="form-group" onSubmit={addProduct}>
-                <label htmlFor="product-name">product name</label>
+                <label htmlFor="product-name">product name </label>
                 
                 <input type="text" className="form-control" required
                     onChange={(e)=>setProductName(e.target.value)} value={productName}/>
                 <br />
-                <label htmlFor="product-price">product price</label>
+                <label htmlFor="product-price">product price </label>
                 <input type= "number" className="form-control" required
                     onChange={(e)=>setProductPrice(e.target.value)} value={productPrice}/>
                 <br />
-                <label htmlFor="product-img">product image</label>
+                <label htmlFor="product-img">product image </label>
                 <input type="file" className="form-control" onChange={productImgHandler} />
                 <br />
                 <button className="btn btn-success btn-md">add</button>

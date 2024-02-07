@@ -23,21 +23,28 @@ const ProductsUpload = () => {
     }, [])
 
     const handleDelete = async (productId) => {
-        try {
-            await deleteDoc(doc(txtDB, "products", productId))
-            setProducts((prevProducts) => prevProducts.filter(product => product.id !== productId))
-        } catch (error) {
-            console.error("error deleting product", error)
+        const isPasswordCorrect = prompt("enter password")
+        if (isPasswordCorrect !== null) {
+        if (isPasswordCorrect === '1234') {
+            try {
+                await deleteDoc(doc(txtDB, "products", productId))
+                setProducts((prevProducts) => prevProducts.filter(product => product.id !== productId))
+            } catch (error) {
+                console.error("error deleting product", error)
+            }
+        } else {
+            alert("incorrect password")
         }
     }
+}
 
     return (
-        <div className="container">
+        <div className="container">     
             <ul className="product-list">
                 {products.map((product) => (
                     <li key={product.id}>
                         <h3> {product.name} </h3>
-                        <p> price: ₪{product.price}</p>
+                        <p> price: {product.price}₪</p>
                         <img src = {product.imageUrl} alt = {product.name} className = "product-image" />
                         <button onClick={() => handleDelete(product.id)}>delete</button>
                     </li>
