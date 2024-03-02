@@ -3,7 +3,8 @@ name: NPM Install on Push
 on:
   push:
     branches:
-      - eden-dev # Change this to your main branch
+      - eden-dev
+      - sashaDev
 
 jobs:
   npm_install:
@@ -20,5 +21,3 @@ jobs:
 
       - name: Install Dependencies
         run: npm install
-
-    # Add additional steps as needed for your build or test process
