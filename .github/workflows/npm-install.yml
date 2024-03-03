@@ -5,6 +5,7 @@ on:
     branches:
       - eden-dev
       - sashaDev
+      - omer-dev
 
 jobs:
   npm_install:
