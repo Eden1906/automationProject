@@ -1,0 +1,23 @@
+name: NPM Install on Push
+
+on:
+  push:
+    branches:
+      - eden-dev
+      - sashaDev
+
+jobs:
+  npm_install:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18.16.0"
+
+      - name: Install Dependencies
+        run: npm install
