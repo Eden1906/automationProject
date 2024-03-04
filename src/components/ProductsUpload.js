@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import {collection, getDocs, deleteDoc, doc, addDoc } from "firebase/firestore";
 import { txtDB } from '../firebaseConfig';
 import Order from './Order'
+import shoppingCartImage from '/Users/eden1906/automationProject/src/shopping-cart.png'
+
 
 
 const ProductsUpload = () => {
@@ -100,7 +102,9 @@ const handleApplyCoupon = () => {
             <div className="coupon-banner">
                 <p> NEW COUPON CODE FOR 5% DISCOUNT! - SCE2024</p>
             </div> 
-            <button onClick={toggleCartModal}>shopping cart</button>
+            <button onClick={toggleCartModal}>
+                <img src={shoppingCartImage} alt = "Shopping Cart" style = {{width: '40px', height: '40px'}}/>
+            </button>
             {showCartModal && (
                 <div className="cart">
                 <ul>
