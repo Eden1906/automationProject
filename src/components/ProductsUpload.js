@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import {collection, getDocs, deleteDoc, doc, addDoc } from "firebase/firestore";
 import { txtDB } from '../firebaseConfig';
 import Order from './Order'
-import shoppingCartImage from '/Users/eden1906/automationProject/src/shopping-cart.png'
+import shoppingCartImage from '../shopping-cart.png'
 
 
 
