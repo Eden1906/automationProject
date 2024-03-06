@@ -102,7 +102,7 @@ const handleApplyCoupon = () => {
             <div className="coupon-banner">
                 <p> NEW COUPON CODE FOR 5% DISCOUNT! - SCE2024</p>
             </div> 
-            <button onClick={toggleCartModal}>
+            <button onClick={toggleCartModal} name='cart-button'>
                 <img src={shoppingCartImage} alt = "Shopping Cart" style = {{width: '40px', height: '40px'}}/>
             </button>
             {showCartModal && (
@@ -118,12 +118,13 @@ const handleApplyCoupon = () => {
                 <button onClick={handleClearCart}>clear cart</button>
                 <div className="coupon-container">
                     <p> Coupon Code:</p>
-                    <input 
+                    <input
+                        name = 'coupon-textbox'
                         type = "text"
                         value = {couponCode}
                         onChange={(e) => setCouponeCode(e.target.value)}
                     />
-                    <button onClick={handleApplyCoupon}>Apply Coupon</button>
+                    <button name ='coupon-button' onClick={handleApplyCoupon}>Apply Coupon</button>
                 </div>
                 <Order onPlaceOrder={handlePlaceOrder} />
             </div>
