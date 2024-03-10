@@ -2,12 +2,18 @@ import React, { useEffect, useState } from "react";
 import {collection, getDocs, deleteDoc, doc, addDoc } from "firebase/firestore";
 import { txtDB } from '../firebaseConfig';
 import Order from './Order'
+import shoppingCartImage from '../shopping-cart.png'
+
 
 
 const ProductsUpload = () => {
     const [products, setProducts] = useState([])
     const [cart, setCart] = useState([])
     const [showCartModal, setShowCartModal] = useState(false)
+    const [totalAmount, setTotalAmount] = useState(0)
+    const [couponCode, setCouponeCode] = useState("")
+    const [couponApplied, setCouponApplied] = useState(false)
+    const couponDiscount = 0.05;
 
     useEffect (() => {
         const fetchProducts = async () => {
@@ -47,6 +53,7 @@ const handleAddToCart = (productId) => {
 }
 
 const handleClearCart = () => {
+    setCouponApplied(false)
     setCart([])
 }
 
@@ -69,9 +76,35 @@ const handlePlaceOrder = async (orderDetails) => {
     }
 }
 
+const updateTotalAmount = () => {
+    const total = cart.reduce((acc, item) => acc + item.price, 0)
+    setTotalAmount(total)
+}
+useEffect(() => {
+    updateTotalAmount()
+}, [cart])
+
+const handleApplyCoupon = () => {
+    if (couponCode === "SCE2024" && cart.length > 0 && !couponApplied) {
+        setTotalAmount((prevTotal) => prevTotal * (1 - couponDiscount))
+        setCouponApplied(true)
+    } else if(cart.length === 0) {
+        alert("Cart is empty")
+    } else if (couponApplied) {
+        alert("Coupon has already been applied")
+    } else {
+        alert("Invalid coupon code")
+    }
+}
+
     return (
-        <div className="container">     
-            <button onClick={toggleCartModal}>shopping cart</button>
+        <div className="container">   
+            <div className="coupon-banner">
+                <p> NEW COUPON CODE FOR 5% DISCOUNT! - SCE2024</p>
+            </div> 
+            <button onClick={toggleCartModal} name='cart-button'>
+                <img src={shoppingCartImage} alt = "Shopping Cart" style = {{width: '40px', height: '40px'}}/>
+            </button>
             {showCartModal && (
                 <div className="cart">
                 <ul>
@@ -81,7 +114,18 @@ const handlePlaceOrder = async (orderDetails) => {
                         </li>
                     ))}
                 </ul>
+                <p> Total amount: {totalAmount}₪</p>
                 <button onClick={handleClearCart}>clear cart</button>
+                <div className="coupon-container">
+                    <p> Coupon Code:</p>
+                    <input
+                        name = 'coupon-textbox'
+                        type = "text"
+                        value = {couponCode}
+                        onChange={(e) => setCouponeCode(e.target.value)}
+                    />
+                    <button name ='coupon-button' onClick={handleApplyCoupon}>Apply Coupon</button>
+                </div>
                 <Order onPlaceOrder={handlePlaceOrder} />
             </div>
             )}     
