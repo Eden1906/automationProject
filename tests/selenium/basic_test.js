@@ -27,6 +27,23 @@ const assert = require("assert");
     let alertText = await alert.getText();
     assert.equal('Cart is empty',alertText);
 
+    await alert.accept()
+
+    let add_to_cart_button =  await driver.findElement(By.name('button1'));
+    await add_to_cart_button.click();
+    await coupon_button.click();
+    await coupon_button.click();
+
+    alert = await driver.switchTo().alert();
+
+    // Get the text of the alert
+    alertText = await alert.getText();
+    assert.equal('Coupon has already been applied',alertText);
+
+    await alert.accept()
+
+
+
   } catch (e) {
     console.log(e)
   } finally {
