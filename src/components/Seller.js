@@ -29,6 +29,7 @@ const Seller = () => {
             await uploadBytes(imgRef, productImg)
             const imgUrl = await getDownloadURL(imgRef)
             try {
+                /* eslint-disable no-unused-vars */
                 const docRef = await addDoc(collection(txtDB, "products"), {
                     name: productName,
                     price: parseFloat(productPrice),
