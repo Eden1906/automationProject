@@ -10,8 +10,11 @@ const flash = require("connect-flash");
 const errorController = require("./controllers/error");
 const User = require("./models/user");
 
+// const MONGODB_URI =
+//   "mongodb+srv://AlexPerednya:a10b20c30@shop.ajxi6dm.mongodb.net/shop?retryWrites=true&w=majority&appName=Shop";
+
 const MONGODB_URI =
-  "mongodb+srv://AlexPerednya:a10b20c30@shop.ajxi6dm.mongodb.net/shop?retryWrites=true&w=majority&appName=Shop";
+  "mongodb+srv://shopProject:Maccabi@cluster0.rjis4tp.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 const app = express();
 const store = new MongoDBStore({
   uri: MONGODB_URI,
