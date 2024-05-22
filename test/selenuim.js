@@ -1,52 +1,99 @@
-const { Builder, By, Key, until } = require("selenium-webdriver");
+const { Builder, By, until } = require("selenium-webdriver");
+const assert = require("assert");
 
-async function runECommerceTests() {
-  // Set up Selenium WebDriver
-  const driver = await new Builder().forBrowser("chrome").build();
+(async function loginTest() {
+  // Connect to the Selenium Grid hub
+  let driver = await new Builder()
+    .usingServer("http://localhost:4444/wd/hub") // URL of the Selenium Grid hub
+    .forBrowser("chrome") // Specify the browser (chrome)
+    .build();
 
   try {
-    // Navigate to the e-commerce website
+    // Step 1: Navigate to the home page
     await driver.get("http://localhost:3000");
 
-    // Test scenario 1: Search for a product
-    await driver.findElement(By.name("search")).sendKeys("laptop", Key.RETURN);
-    await driver.wait(until.titleContains("Search Results"), 5000);
-    console.log("Test scenario 1: Search for a product - Passed");
+    // Step 2: Navigate to the login page
+    await driver.findElement(By.linkText("Login")).click(); // Adjust the selector as needed
 
-    // Test scenario 2: Add a product to the cart
-    const productLink = await driver.findElement(By.css(".product-link"));
-    await productLink.click();
-    await driver.findElement(By.css(".add-to-cart")).click();
-    console.log("Test scenario 2: Add a product to the cart - Passed");
+    // Step 3: Wait for the login page to load
+    await driver.wait(until.urlContains("/login"), 10000);
 
-    // Test scenario 3: View the shopping cart
-    await driver.findElement(By.linkText("Cart")).click();
-    await driver.wait(until.titleContains("Shopping Cart"), 5000);
-    console.log("Test scenario 3: View the shopping cart - Passed");
+    // Step 4: Perform login
+    await driver.findElement(By.name("email")).sendKeys("test@test.com");
+    await driver.findElement(By.name("password")).sendKeys("123");
+    await driver.findElement(By.css('button[type="submit"]')).click();
 
-    // Test scenario 4: Proceed to checkout
-    await driver.findElement(By.css(".checkout-button")).click();
-    await driver.wait(until.titleContains("Checkout"), 5000);
-    console.log("Test scenario 4: Proceed to checkout - Passed");
+    // // Step 5: Wait for redirection after login
+    // await driver.wait(until.urlContains("/"), 10000);
 
-    // Test scenario 5: Fill in checkout form
-    await driver.findElement(By.name("name")).sendKeys("John Doe");
-    await driver.findElement(By.name("email")).sendKeys("john@example.com");
-    await driver.findElement(By.name("address")).sendKeys("123 Main St");
-    await driver.findElement(By.name("city")).sendKeys("Anytown");
-    await driver.findElement(By.name("zipcode")).sendKeys("12345");
-    await driver.findElement(By.name("submit")).click();
-    console.log("Test scenario 5: Fill in checkout form - Passed");
+    // Step 6: Verify that the login was successful
+    // You can check for the presence of a specific element that indicates a successful login
+    // For example, check if the user is redirected to a dashboard or a welcome message is displayed
 
-    // Wait for the confirmation page to load
-    await driver.wait(until.titleContains("Order Confirmation"), 5000);
-    console.log("Test scenario 6: Order Confirmation - Passed");
-  } catch (error) {
-    console.error("Test failed:", error);
+    const loggedInIndicator = await driver.wait(
+      until.elementLocated(By.css(".logout-button")), // Update with your actual selector
+      20000
+    );
+    const isLoggedIn = await loggedInIndicator.isDisplayed();
+    assert(isLoggedIn, "Login failed!");
+
+    console.log("Chrome - Login test passed!");
+  } catch (err) {
+    console.error("Chrome - Test failed: ", err);
   } finally {
-    // Close the browser
     await driver.quit();
   }
-}
+})();
 
-runECommerceTests();
+(async function addToCartTest() {
+  // Connect to the Selenium Grid hub
+  let driver = await new Builder()
+    .usingServer("http://localhost:4444") // URL of the Selenium Grid hub
+    .forBrowser("chrome") // Specify the browser you want to use
+    .build();
+
+  try {
+    // Step 1: Navigate to the login page
+    await driver.get("http://localhost:3000/login"); // Adjust the URL to your login page
+
+    // Step 2: Perform login
+    await driver.findElement(By.name("email")).sendKeys("test@test.com");
+    await driver.findElement(By.name("password")).sendKeys("123");
+    await driver.findElement(By.css('button[type="submit"]')).click();
+
+    // Step 3: Wait for redirection after login
+    await driver.wait(until.urlContains("/"), 10000);
+
+    // Step 4: Navigate to the shop page where products are listed
+    await driver.get("http://localhost:3000/"); // Adjust the URL if needed
+
+    // Step 5: Find the first product's 'Add to Cart' button and click it
+    await driver.wait(
+      until.elementLocated(By.css(".product-item .card__actions form button")),
+      10000
+    );
+    const addToCartButton = await driver.findElement(
+      By.css(".product-item .card__actions form button")
+    );
+    await addToCartButton.click();
+
+    // Step 6: Wait for redirection to the cart page
+    await driver.wait(until.urlContains("/cart"), 10000);
+
+    // Step 7: Verify that the product is in the cart
+    await driver.wait(until.elementLocated(By.css(".cart-item")), 10000);
+    const cartItem = await driver.findElement(
+      By.css(".cart-item .product__title")
+    );
+    const cartItemText = await cartItem.getText();
+
+    // Assert that the product title in the cart matches the expected title
+    assert.strictEqual(cartItemText, "Expected Product Title"); // Replace with your actual product title
+
+    console.log("Product successfully added to cart!");
+  } catch (err) {
+    console.error("Test failed: ", err);
+  } finally {
+    await driver.quit();
+  }
+});
