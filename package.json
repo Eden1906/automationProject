@@ -12,6 +12,10 @@
   "author": "Maximilian Schwarzmüller",
   "license": "ISC",
   "devDependencies": {
+    "@eslint/compat": "^1.0.1",
+    "eslint": "^9.3.0",
+    "eslint-plugin-react": "^7.34.1",
+    "globals": "^15.3.0",
     "nodemon": "^1.18.3"
   },
   "dependencies": {
