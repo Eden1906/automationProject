@@ -12,11 +12,13 @@
   "license": "ISC",
   "devDependencies": {
     "@eslint/compat": "^1.0.1",
+    "chromedriver": "^125.0.1",
     "eslint-plugin-react": "^7.34.1",
     "globals": "^15.3.0",
     "nodemon": "^1.18.3"
   },
   "dependencies": {
+    "assert": "^2.1.0",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.3",
     "connect-flash": "^0.1.1",
@@ -27,7 +29,7 @@
     "express-handlebars": "^3.0.0",
     "express-session": "^1.18.0",
     "mongodb": "^6.4.0",
-    "mongoose": "^8.2.1",
+    "mongoose": "^8.4.0",
     "mysql2": "^3.9.2",
     "pug": "^2.0.3",
     "selenium-webdriver": "^4.21.0"

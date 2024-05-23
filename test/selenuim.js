@@ -3,10 +3,11 @@ const assert = require("assert");
 
 (async function loginTest() {
   // Connect to the Selenium Grid hub
-  let driver = await new Builder()
-    .usingServer("http://localhost:4444/wd/hub") // URL of the Selenium Grid hub
-    .forBrowser("chrome") // Specify the browser (chrome)
-    .build();
+  driver = await new Builder().forBrowser("chrome");
+  //let driver = await new Builder()
+    //.usingServer("http://localhost:4444/wd/hub") // URL of the Selenium Grid hub
+    //.forBrowser("chrome") // Specify the browser (chrome)
+    //.build();
 
   try {
     // Step 1: Navigate to the home page
