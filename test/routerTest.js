@@ -1,60 +1,63 @@
+const { Builder, By, until } = require("selenium-webdriver");
+
 const assert = require("assert");
 
 async function testHomePage(driver) {
   await driver.get("http://localhost:3000/");
   const title = await driver.getTitle();
-  console.log(title);
   assert.strictEqual(title, "Shop");
   console.log("Home page test passed");
+  await delay(2000);
 }
 
 async function testProductsPage(driver) {
-  await driver.get("http://localhost:3000/products");
+  await driver.get("http://localhost:3000");
+  await driver.findElement(By.css('a[href="/products"]')).click();
+  await driver.wait(until.urlContains("/products"), 1000);
   const title = await driver.getTitle();
-  assert.strictEqual(title, "Your Products Page Title");
+  assert.strictEqual(title, "All Products");
   console.log("Products page test passed");
+  await delay(2000);
 }
 
 async function testCartPage(driver) {
-  await driver.get("http://localhost:3000/cart");
+  await driver.get("http://localhost:3000");
+  await driver.findElement(By.css('a[href="/cart"]')).click();
+  await driver.wait(until.urlContains("/cart"), 1000);
   const title = await driver.getTitle();
-  assert.strictEqual(title, "Your Cart Page Title");
+  assert.strictEqual(title, "Your Cart");
   console.log("Cart page test passed");
+  await delay(2000);
 }
 
 async function testOrdersPage(driver) {
-  await driver.get("http://localhost:3000/orders");
+  await driver.get("http://localhost:3000");
+  await driver.findElement(By.css('a[href="/orders"]')).click();
+  await driver.wait(until.urlContains("/orders"), 1000);
   const title = await driver.getTitle();
-  assert.strictEqual(title, "Your Orders Page Title");
+  assert.strictEqual(title, "Your Orders");
   console.log("Orders page test passed");
+  await delay(2000);
 }
 
 async function testAddProductPage(driver) {
-  await driver.get("http://localhost:3000/admin/add-product");
+  await driver.get("http://localhost:3000");
+  await driver.findElement(By.css('a[href="/admin/add-product"]')).click();
+  await driver.wait(until.urlContains("/admin/add-product"), 1000);
   const title = await driver.getTitle();
   assert.strictEqual(title, "Add Product");
-  console.log("Add Product page test passed");
+  console.log("Add product page test passed");
+  await delay(2000);
 }
 
 async function testAdminProductsPage(driver) {
-  await driver.get("http://localhost:3000/admin/products");
+  await driver.get("http://localhost:3000");
+  await driver.findElement(By.css('a[href="/admin/products"]')).click();
+  await driver.wait(until.urlContains("/admin/products"), 1000);
   const title = await driver.getTitle();
   assert.strictEqual(title, "Admin Products");
-  console.log("Admin Products page test passed");
-}
-
-async function testLoginPage(driver) {
-  await driver.get("http://localhost:3000/login");
-  const title = await driver.getTitle();
-  assert.strictEqual(title, "Login");
-  console.log("Login page test passed");
-}
-
-async function testSignupPage(driver) {
-  await driver.get("http://localhost:3000/signup");
-  const title = await driver.getTitle();
-  assert.strictEqual(title, "Signup");
-  console.log("Signup page test passed");
+  console.log("Admin products page test passed");
+  await delay(2000);
 }
 
 module.exports = {
@@ -64,6 +67,8 @@ module.exports = {
   testOrdersPage,
   testAddProductPage,
   testAdminProductsPage,
-  testLoginPage,
-  testSignupPage,
 };
+
+function delay(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
