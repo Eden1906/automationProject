@@ -545,7 +545,44 @@ const Order = require("../models/order");
   }
 });
 
+// check the details about the product when I am not connected to the website
 (async function detailOfProductTest() {
+  let driver;
+  try {
+    driver = await new Builder()
+      .usingServer("http://localhost:4444")
+      .forBrowser("chrome")
+      .build();
+    await driver.get("http://localhost:3000/");
+    // Step 1: Find the first product and extract its ID
+    const firstProductLink = await driver.findElement(
+      By.css(".product-item:first-child a")
+    );
+    const productId = (await firstProductLink.getAttribute("href"))
+      .split("/")
+      .pop();
+
+    // Step 2: Click on the details link of the first product
+    await firstProductLink.click();
+
+    // Step 3: Verify that you are on the detail page of the correct product
+    await driver.wait(
+      until.urlMatches(new RegExp(`/products/${productId}`)),
+      10000
+    );
+    console.log(
+      `Successfully navigated to the detail page of the product with ID ${productId}.`
+    );
+  } catch (err) {
+    console.error("Test failed: ", err);
+  } finally {
+    if (driver) {
+      await driver.quit();
+    }
+  }
+})();
+// check the details on the product while I'm already connected to the website
+(async function detailOfProductTestloggedin() {
   let driver;
   try {
     driver = await new Builder()
