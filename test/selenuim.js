@@ -537,6 +537,115 @@ const Order = require("../models/order");
       throw new Error(`Product with title "${productTitle}" not found.`);
     }
   } catch (err) {
+    console.error("Test failed: ", err);
   } finally {
+    if (driver) {
+      await driver.quit();
+    }
   }
-})();
+});
+
+(async function detailOfProductTest() {
+  let driver;
+  try {
+    driver = await new Builder()
+      .usingServer("http://localhost:4444")
+      .forBrowser("chrome")
+      .build();
+
+    // Step 1: Navigate to the login page
+    await driver.get("http://localhost:3000/login");
+
+    // Step 2: Perform login
+    await driver.findElement(By.name("email")).sendKeys("test@test.com");
+    await driver.findElement(By.name("password")).sendKeys("123");
+    await driver.findElement(By.css('button[type="submit"]')).click();
+
+    // Step 3: Wait for redirection after login
+    await driver.wait(until.urlContains("/"), 10000);
+
+    // Step 4: Navigate to the main products list page
+    await driver.get("http://localhost:3000/");
+
+    // Step 5: Find the first product and extract its ID
+    const firstProductLink = await driver.findElement(
+      By.css(".product-item:first-child a")
+    );
+    const productId = (await firstProductLink.getAttribute("href"))
+      .split("/")
+      .pop();
+
+    // Step 6: Click on the details link of the first product
+    await firstProductLink.click();
+
+    // Step 7: Verify that you are on the detail page of the correct product
+    await driver.wait(
+      until.urlMatches(new RegExp(`/products/${productId}`)),
+      10000
+    );
+    console.log(
+      `Successfully navigated to the detail page of the product with ID ${productId}.`
+    );
+  } catch (err) {
+    console.error("Test failed: ", err);
+  } finally {
+    if (driver) {
+      await driver.quit();
+    }
+  }
+});
+
+// signup and then login to the site
+(async function signupTest() {
+  let driver;
+
+  try {
+    driver = await new Builder().forBrowser("chrome").build();
+
+    // Step 1: navigate to the website
+    await driver.get("http://localhost:3000");
+
+    // Step 2: find and click on the signup link
+    const signupLink = await driver.findElement(By.css('a[href="/signup"]'));
+    await signupLink.click();
+
+    // Step 3: fill in the signup form and submit
+    const randomEmail = `signuptest${Math.random()
+      .toString(36)
+      .substring(7)}@test.com`;
+
+    const password = "123";
+    await driver.findElement(By.name("email")).sendKeys(randomEmail);
+    await driver.findElement(By.name("password")).sendKeys(password);
+    await driver.findElement(By.name("confirmPassword")).sendKeys(password);
+    await driver.findElement(By.css('button[type="submit"')).click();
+    await driver.wait(until.urlContains("/login"), 10000);
+
+    // Step 4: login to the website
+    await driver.findElement(By.name("email")).sendKeys(randomEmail);
+    await driver.findElement(By.name("password")).sendKeys(password);
+    await driver.findElement(By.css('button[type="submit"')).click();
+    await driver.wait(until.urlContains("/"), 10000);
+
+    // Step 5: Check if logout form is present
+    const logoutForm = await driver.findElement(
+      By.css('form[action="/logout"]')
+    );
+    const isLogoutFormDisplayed = await logoutForm.isDisplayed();
+
+    // Assert that the logout form is displayed
+    assert.strictEqual(
+      isLogoutFormDisplayed,
+      true,
+      "signup failed: Logout form is not displayed"
+    );
+
+    console.log("Signup successful.");
+  } catch (err) {
+    console.error("Test failed: ", err);
+  } finally {
+    if (driver) {
+      await driver.quit();
+    }
+  }
+});
