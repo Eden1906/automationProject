@@ -272,7 +272,7 @@ const Order = require("../models/order");
   }
 });
 
-// add product and then edit the product test
+// add product and then edit the product
 (async function editProductTest() {
   let driver;
   try {
@@ -440,5 +440,103 @@ const Order = require("../models/order");
     if (driver) {
       await driver.quit();
     }
+  }
+});
+
+// add product and then delete the product
+(async function deleteProductTest() {
+  let driver;
+  try {
+    driver = await new Builder()
+      .usingServer("http://localhost:4444")
+      .forBrowser("chrome")
+      .build();
+
+    // Step 1: Navigate to the login page
+    await driver.get("http://localhost:3000/login");
+
+    // Step 2: Perform login
+    await driver.findElement(By.name("email")).sendKeys("test@test.com");
+    await driver.findElement(By.name("password")).sendKeys("123");
+    await driver.findElement(By.css('button[type="submit"]')).click();
+
+    // Step 3: Wait for redirection after login
+    await driver.wait(until.urlContains("/"), 10000);
+
+    // Step 4: Click on add product button
+    const addProductButton = await driver.wait(
+      until.elementLocated(By.css('a[href="/admin/add-product"]')),
+      10000
+    );
+    await addProductButton.click();
+
+    // Step 5: Fill in the product form
+    const productTitle = "delete Product Test";
+    await driver.findElement(By.name("title")).sendKeys(productTitle);
+    await driver
+      .findElement(By.name("imageUrl"))
+      .sendKeys("http://example.com/image.jpg");
+    await driver.findElement(By.name("price")).sendKeys("9.99");
+    await driver
+      .findElement(By.name("description"))
+      .sendKeys("This is a delete product test.");
+    await driver
+      .findElement(By.xpath('//button[contains(text(), "Add Product")]'))
+      .click();
+
+    // Step 6: Wait for redirection to the admin products page
+    await driver.wait(until.urlContains("/admin/products"), 5000);
+
+    // Step 7: Find the product that added and extract the detail about him
+    const products = await driver.findElements(By.css(".product-item"));
+    let targetProduct;
+    for (const product of products) {
+      const titleElement = await product.findElement(By.css(".product__title"));
+      const title = await titleElement.getText();
+
+      if (title.trim() === productTitle) {
+        targetProduct = product;
+        break;
+      }
+    }
+
+    if (targetProduct) {
+      // Step 8: Click on the Delete button
+      const deleteButton = await targetProduct.findElement(
+        By.css('.card__actions form button[type="submit"]')
+      );
+      await deleteButton.click();
+
+      // Step 9: Check if the product is deleted by trying to locate it again
+      const productsAfterDeletion = await driver.findElements(
+        By.css(".product-item")
+      );
+      let productFound = false;
+      for (const product of productsAfterDeletion) {
+        const titleElement = await product.findElement(
+          By.css(".product__title")
+        );
+        const title = await titleElement.getText();
+
+        if (title.trim() === productTitle) {
+          productFound = true;
+          break;
+        }
+      }
+
+      if (!productFound) {
+        console.log(
+          `Product with title "${productTitle}" has been successfully deleted.`
+        );
+      } else {
+        throw new Error(
+          `Product with title "${productTitle}" was not deleted.`
+        );
+      }
+    } else {
+      throw new Error(`Product with title "${productTitle}" not found.`);
+    }
+  } catch (err) {
+  } finally {
   }
 })();
