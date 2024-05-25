@@ -36,6 +36,7 @@ const assert = require("assert");
 const User = require("../models/user");
 const Order = require("../models/order");
 
+// check if all routers work
 (async function routerTests() {
   let driver; // Define the driver variable outside the try block
   try {
@@ -72,6 +73,7 @@ const Order = require("../models/order");
   }
 });
 
+// add product to the cart
 (async function addToCartTest() {
   // Connect to the Selenium Grid hub
   let driver = await new Builder()
@@ -192,7 +194,7 @@ const Order = require("../models/order");
     }
   }
 });
-
+// add product test
 (async function addProductTest() {
   let driver;
   try {
@@ -235,12 +237,6 @@ const Order = require("../models/order");
 
     // Step 6: Wait for redirection to the admin products page
     await driver.wait(until.urlContains("/admin/products"), 5000);
-
-    // // Step 7: Verify that the product was added
-    // const addedProductTitleElement = await driver.wait(
-    //   until.elementLocated(By.css(".product-item")),
-    //   10000
-    // );
 
     const products = await driver.findElements(By.css(".product-item"));
     let addedProductTitle;
@@ -580,7 +576,7 @@ const Order = require("../models/order");
       await driver.quit();
     }
   }
-})();
+});
 // check the details on the product while I'm already connected to the website
 (async function detailOfProductTestloggedin() {
   let driver;
@@ -637,7 +633,10 @@ const Order = require("../models/order");
   let driver;
 
   try {
-    driver = await new Builder().forBrowser("chrome").build();
+    driver = await new Builder()
+      .usingServer("http://localhost:4444")
+      .forBrowser("chrome")
+      .build();
 
     // Step 1: navigate to the website
     await driver.get("http://localhost:3000");
