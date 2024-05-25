@@ -37,7 +37,7 @@ const User = require("../models/user");
 const Order = require("../models/order");
 
 // check if all routers work
-(async function routerTests() {
+async function routerTests() {
   let driver; // Define the driver variable outside the try block
   try {
     driver = await new Builder()
@@ -69,12 +69,14 @@ const Order = require("../models/order");
   } catch (err) {
     console.log("Test failed: ", err);
   } finally {
-    await driver.quit();
+    if (driver) {
+      await driver.quit();
+    }
   }
-});
+}
 
 // add product to the cart
-(async function addToCartTest() {
+async function addToCartTest() {
   // Connect to the Selenium Grid hub
   let driver = await new Builder()
     .usingServer("http://localhost:4444") // URL of the Selenium Grid hub
@@ -128,12 +130,11 @@ const Order = require("../models/order");
   } finally {
     await driver.quit();
     await mongoose.connection.close();
-    process.exit(0);
   }
-});
+}
 
 // add product to cart and order it.
-(async function makeOrderTest() {
+async function makeOrderTest() {
   // Connect to the Selenium Grid hub
 
   let driver = await new Builder()
@@ -143,7 +144,7 @@ const Order = require("../models/order");
 
   try {
     // Connect to the DataBase
-    connectDB();
+    await connectDB();
     let lastLengthOfOrders;
     await Order.find().then((order) => (lastLengthOfOrders = order.length));
 
@@ -193,9 +194,9 @@ const Order = require("../models/order");
       await driver.quit();
     }
   }
-});
+}
 // add product test
-(async function addProductTest() {
+async function addProductTest() {
   let driver;
   try {
     driver = await new Builder()
@@ -247,7 +248,6 @@ const Order = require("../models/order");
 
       if (title.trim() === productTitle) {
         addedProductTitle = title;
-        console.log(title);
         break;
       }
     }
@@ -266,10 +266,10 @@ const Order = require("../models/order");
       await driver.quit();
     }
   }
-});
+}
 
 // add product and then edit the product
-(async function editProductTest() {
+async function editProductTest() {
   let driver;
   try {
     driver = await new Builder()
@@ -429,7 +429,7 @@ const Order = require("../models/order");
     // console.log(`New Price: ${updatedPrice}`);
     // console.log(`Old Description: ${oldDescription}`);
     // console.log(`New Description: ${updatedDescription}`);
-    // console.log("Product updated successfully!");
+    console.log("Product updated successfully!");
   } catch (err) {
     console.error("Test failed: ", err);
   } finally {
@@ -437,10 +437,10 @@ const Order = require("../models/order");
       await driver.quit();
     }
   }
-});
+}
 
 // add product and then delete the product
-(async function deleteProductTest() {
+async function deleteProductTest() {
   let driver;
   try {
     driver = await new Builder()
@@ -539,10 +539,10 @@ const Order = require("../models/order");
       await driver.quit();
     }
   }
-});
+}
 
 // check the details about the product when I am not connected to the website
-(async function detailOfProductTest() {
+async function detailOfProductTest() {
   let driver;
   try {
     driver = await new Builder()
@@ -576,9 +576,9 @@ const Order = require("../models/order");
       await driver.quit();
     }
   }
-});
+}
 // check the details on the product while I'm already connected to the website
-(async function detailOfProductTestloggedin() {
+async function detailOfProductTestloggedin() {
   let driver;
   try {
     driver = await new Builder()
@@ -626,10 +626,10 @@ const Order = require("../models/order");
       await driver.quit();
     }
   }
-});
+}
 
 // signup and then login to the site
-(async function signupTest() {
+async function signupTest() {
   let driver;
 
   try {
@@ -684,4 +684,21 @@ const Order = require("../models/order");
       await driver.quit();
     }
   }
-});
+}
+
+(async function runAllTest() {
+  try {
+    await routerTests();
+    await addToCartTest();
+    await makeOrderTest();
+    await addProductTest();
+    await editProductTest();
+    await deleteProductTest();
+    await detailOfProductTest();
+    await detailOfProductTestloggedin();
+    await signupTest();
+  } catch (err) {
+  } finally {
+    process.exit(0);
+  }
+})();
