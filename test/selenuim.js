@@ -8,6 +8,37 @@ const {
 } = require("./routerTest.js");
 
 const mongoose = require("mongoose");
+const firefox = require("selenium-webdriver/firefox");
+
+async function initDriver(browser) {
+  let driver;
+
+  try {
+    if (browser === "chrome") {
+      driver = await new Builder()
+        .usingServer("http://localhost:4444")
+        .forBrowser("chrome")
+        .build();
+    } else if (browser === "firefox") {
+      driver = await new Builder()
+        .usingServer("http://localhost:4444")
+        .forBrowser("firefox")
+        .setFirefoxOptions(
+          new firefox.Options().setBinary(
+            "C:\\Program Files\\Mozilla Firefox\\firefox.exe"
+          )
+        )
+        .build();
+    } else {
+      throw new Error("Unsupported browser type");
+    }
+
+    return driver;
+  } catch (err) {
+    console.error("Error initializing driver: ", err);
+    throw err;
+  }
+}
 
 const MONGODB_URI =
   "mongodb+srv://shopProject:Maccabi@cluster0.rjis4tp.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
@@ -21,77 +52,55 @@ const connectDB = async () => {
   }
 };
 
-const login = async (driver) => {
-  await driver.get("http://localhost:3000/login");
-  await driver.findElement(By.name("email")).sendKeys("test@test.com");
-  await driver.findElement(By.name("password")).sendKeys("123");
-  await driver.findElement(By.css('button[type="submit"]')).click();
-  await driver.wait(until.urlContains("/"), 10000);
-  const cookies = await driver.manage().getCookies();
-  return cookies;
-};
-
 const { Builder, By, until } = require("selenium-webdriver");
 const assert = require("assert");
 const User = require("../models/user");
 const Order = require("../models/order");
 
-// check if all routers work
-async function routerTests() {
-  let driver; // Define the driver variable outside the try block
+// check if all router work in the site
+async function routerTests(browser) {
+  let driver;
   try {
-    driver = await new Builder()
-      .usingServer("http://localhost:4444")
-      .forBrowser("chrome")
-      .build();
+    driver = await initDriver(browser);
 
-    // First login to the page:
-    const cookies = await login(driver);
+    // Step 1: Navigate to the login page
+    await driver.get("http://localhost:3000/login");
 
-    const reuseSession = async (testFunction) => {
-      await driver.get("http://localhost:3000");
-      for (let cookie of cookies) {
-        await driver.manage().addCookie(cookie);
-      }
-      await driver.navigate().refresh();
-      await testFunction(driver);
-    };
+    // Step 2: Perform login
+    await driver.findElement(By.name("email")).sendKeys("test@test.com");
+    await driver.findElement(By.name("password")).sendKeys("123");
+    await driver.findElement(By.css('button[type="submit"]')).click();
 
-    // Run your tests with the session cookies
-    await reuseSession(testHomePage);
-    await reuseSession(testProductsPage);
-    await reuseSession(testCartPage);
-    await reuseSession(testOrdersPage);
-    await reuseSession(testAddProductPage);
-    await reuseSession(testAdminProductsPage);
+    // Step 3: Wait for redirection after login
+    await driver.wait(until.urlContains("/"), 10000);
 
-    // Add more tests as needed
+    await testHomePage(driver);
+    await testProductsPage(driver);
+    await testCartPage(driver);
+    await testOrdersPage(driver);
+    await testAddProductPage(driver);
+    await testAdminProductsPage(driver);
+
+    console.log("All tests passed.");
   } catch (err) {
     console.log("Test failed: ", err);
   } finally {
-    if (driver) {
-      await driver.quit();
-    }
+    driver.quit();
   }
 }
 
 // add product to the cart
-async function addToCartTest() {
-  // Connect to the Selenium Grid hub
-  let driver = await new Builder()
-    .usingServer("http://localhost:4444") // URL of the Selenium Grid hub
-    .forBrowser("chrome") // Specify the browser you want to use
-    .build();
-
+async function addToCartTest(browser) {
   // Connect to the DataBase
-  connectDB();
+  await connectDB();
 
   // save the last cart of user
   let user = await User.findOne({ email: "test@test.com" });
   const userBeforeUpdatedCart = await user.cart.items;
 
-  // await console.log(cartQuantity.cart.items === cartQuantity.cart.items);
+  let driver;
   try {
+    driver = await initDriver(browser);
     // Step 1: Navigate to the login page
     await driver.get("http://localhost:3000/login"); // Adjust the URL to your login page
 
@@ -128,21 +137,17 @@ async function addToCartTest() {
   } catch (err) {
     console.error("Test failed: ", err);
   } finally {
-    await driver.quit();
     await mongoose.connection.close();
+    await driver.quit();
   }
 }
 
 // add product to cart and order it.
-async function makeOrderTest() {
+async function makeOrderTest(browser) {
   // Connect to the Selenium Grid hub
-
-  let driver = await new Builder()
-    .usingServer("http://localhost:4444") // URL of the Selenium Grid hub
-    .forBrowser("chrome") // Specify the browser you want to use
-    .build();
-
+  let driver;
   try {
+    driver = await initDriver(browser);
     // Connect to the DataBase
     await connectDB();
     let lastLengthOfOrders;
@@ -190,20 +195,15 @@ async function makeOrderTest() {
   } catch (error) {
     console.log("Error occurred:", error);
   } finally {
-    if (driver) {
-      await driver.quit();
-    }
+    await mongoose.connection.close();
+    await driver.quit();
   }
 }
 // add product test
-async function addProductTest() {
+async function addProductTest(browser) {
   let driver;
   try {
-    driver = await new Builder()
-      .usingServer("http://localhost:4444")
-      .forBrowser("chrome")
-      .build();
-
+    driver = await initDriver(browser);
     // Step 1: Navigate to the login page
     await driver.get("http://localhost:3000/login");
 
@@ -262,21 +262,15 @@ async function addProductTest() {
   } catch (err) {
     console.error("Test failed: ", err);
   } finally {
-    if (driver) {
-      await driver.quit();
-    }
+    driver.quit();
   }
 }
 
 // add product and then edit the product
-async function editProductTest() {
+async function editProductTest(browser) {
   let driver;
   try {
-    driver = await new Builder()
-      .usingServer("http://localhost:4444")
-      .forBrowser("chrome")
-      .build();
-
+    driver = await initDriver(browser);
     // Step 1: Navigate to the login page
     await driver.get("http://localhost:3000/login");
 
@@ -433,21 +427,15 @@ async function editProductTest() {
   } catch (err) {
     console.error("Test failed: ", err);
   } finally {
-    if (driver) {
-      await driver.quit();
-    }
+    driver.quit();
   }
 }
 
 // add product and then delete the product
-async function deleteProductTest() {
+async function deleteProductTest(browser) {
   let driver;
   try {
-    driver = await new Builder()
-      .usingServer("http://localhost:4444")
-      .forBrowser("chrome")
-      .build();
-
+    driver = await initDriver(browser);
     // Step 1: Navigate to the login page
     await driver.get("http://localhost:3000/login");
 
@@ -535,20 +523,16 @@ async function deleteProductTest() {
   } catch (err) {
     console.error("Test failed: ", err);
   } finally {
-    if (driver) {
-      await driver.quit();
-    }
+    driver.quit();
   }
 }
 
 // check the details about the product when I am not connected to the website
-async function detailOfProductTest() {
+async function detailOfProductTest(browser) {
   let driver;
   try {
-    driver = await new Builder()
-      .usingServer("http://localhost:4444")
-      .forBrowser("chrome")
-      .build();
+    driver = await initDriver(browser);
+
     await driver.get("http://localhost:3000/");
     // Step 1: Find the first product and extract its ID
     const firstProductLink = await driver.findElement(
@@ -572,19 +556,14 @@ async function detailOfProductTest() {
   } catch (err) {
     console.error("Test failed: ", err);
   } finally {
-    if (driver) {
-      await driver.quit();
-    }
+    driver.quit();
   }
 }
 // check the details on the product while I'm already connected to the website
-async function detailOfProductTestloggedin() {
+async function detailOfProductTestloggedin(browser) {
   let driver;
   try {
-    driver = await new Builder()
-      .usingServer("http://localhost:4444")
-      .forBrowser("chrome")
-      .build();
+    driver = await initDriver(browser);
 
     // Step 1: Navigate to the login page
     await driver.get("http://localhost:3000/login");
@@ -622,22 +601,15 @@ async function detailOfProductTestloggedin() {
   } catch (err) {
     console.error("Test failed: ", err);
   } finally {
-    if (driver) {
-      await driver.quit();
-    }
+    driver.quit();
   }
 }
 
 // signup and then login to the site
-async function signupTest() {
+async function signupTest(browser) {
   let driver;
-
   try {
-    driver = await new Builder()
-      .usingServer("http://localhost:4444")
-      .forBrowser("chrome")
-      .build();
-
+    driver = await initDriver(browser);
     // Step 1: navigate to the website
     await driver.get("http://localhost:3000");
 
@@ -680,24 +652,45 @@ async function signupTest() {
   } catch (err) {
     console.error("Test failed: ", err);
   } finally {
-    if (driver) {
-      await driver.quit();
-    }
+    driver.quit();
   }
 }
 
 (async function runAllTest() {
   try {
-    await routerTests();
-    await addToCartTest();
-    await makeOrderTest();
-    await addProductTest();
-    await editProductTest();
-    await deleteProductTest();
-    await detailOfProductTest();
-    await detailOfProductTestloggedin();
-    await signupTest();
+    await console.log(
+      "----------------Running Test with chrome--------------------"
+    );
+
+    await routerTests("chrome");
+    await addToCartTest("chrome");
+    await makeOrderTest("chrome");
+    await addProductTest("chrome");
+    await editProductTest("chrome");
+    await deleteProductTest("chrome");
+    await detailOfProductTest("chrome");
+    await detailOfProductTestloggedin("chrome");
+    await signupTest("chrome");
+
+    await console.log("------------------------------------------------------");
+
+    await console.log(
+      "----------------Running Test with firefox--------------------"
+    );
+
+    await routerTests("firefox");
+    await addToCartTest("firefox");
+    await makeOrderTest("firefox");
+    await addProductTest("firefox");
+    await editProductTest("firefox");
+    await deleteProductTest("firefox");
+    await detailOfProductTest("firefox");
+    await detailOfProductTestloggedin("firefox");
+    await signupTest("firefox");
+
+    await console.log("------------------------------------------------------");
   } catch (err) {
+    console.error("failed run all test", err);
   } finally {
     process.exit(0);
   }
