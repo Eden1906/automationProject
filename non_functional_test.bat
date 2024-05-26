@@ -1,1 +1,3 @@
-k6 run test\non_functional\stress_test.js
+@echo off
+k6 run test/non_functional/stress_test.js
+pause

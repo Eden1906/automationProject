@@ -11,10 +11,10 @@ export let options = {
     { duration: '10s', target: 0 }, 
     { duration: '10s', target: 10000 },  
     { duration: '10s', target: 10000 }, 
-    { duration: '10s', target: 0 }, 
-    { duration: '10s', target: 100000 },   
-    { duration: '10s', target: 100000 }, 
-    { duration: '10s', target: 0 },   
+    { duration: '10s', target: 0 },
+    { duration: '10s', target: 20000 },  
+    { duration: '10s', target: 20000 }, 
+    { duration: '10s', target: 0 },  
   ],
 };
 
