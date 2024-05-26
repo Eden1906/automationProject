@@ -280,7 +280,9 @@ async function addProductTest(browser) {
     await driver.findElement(By.name("title")).sendKeys(productTitle);
     await driver
       .findElement(By.name("imageUrl"))
-      .sendKeys("http://example.com/image.jpg");
+      .sendKeys(
+        "https://t3.ftcdn.net/jpg/00/06/45/56/360_F_6455661_Ptvg5iAO0DpUlt0ItlO8YewZpvU3IxwX.jpg"
+      );
     await driver.findElement(By.name("price")).sendKeys("9.99");
     await driver
       .findElement(By.name("description"))
@@ -347,7 +349,9 @@ async function editProductTest(browser) {
     await driver.findElement(By.name("title")).sendKeys(productTitle);
     await driver
       .findElement(By.name("imageUrl"))
-      .sendKeys("http://example.com/image.jpg");
+      .sendKeys(
+        "https://t3.ftcdn.net/jpg/00/06/45/56/360_F_6455661_Ptvg5iAO0DpUlt0ItlO8YewZpvU3IxwX.jpg"
+      );
     await driver.findElement(By.name("price")).sendKeys("9.99");
     await driver
       .findElement(By.name("description"))
@@ -408,7 +412,9 @@ async function editProductTest(browser) {
     await driver.findElement(By.name("title")).sendKeys(newProductTitle);
     await driver
       .findElement(By.name("imageUrl"))
-      .sendKeys("http://editedurl.com/image.jpg");
+      .sendKeys(
+        "https://grandvision-media.imgix.net/m/69a9dca2679aed3f/original_png-8719154674457_00001.png"
+      );
     await driver.findElement(By.name("price")).sendKeys("10.99");
     await driver
       .findElement(By.name("description"))
@@ -512,7 +518,9 @@ async function deleteProductTest(browser) {
     await driver.findElement(By.name("title")).sendKeys(productTitle);
     await driver
       .findElement(By.name("imageUrl"))
-      .sendKeys("http://example.com/image.jpg");
+      .sendKeys(
+        "https://grandvision-media.imgix.net/m/69a9dca2679aed3f/original_png-8719154674457_00001.png"
+      );
     await driver.findElement(By.name("price")).sendKeys("9.99");
     await driver
       .findElement(By.name("description"))
