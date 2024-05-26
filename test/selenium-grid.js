@@ -576,7 +576,7 @@ async function deleteProductTest(browser) {
   } catch (err) {
     console.error("Test failed: ", err);
   } finally {
-    driver.quit();
+    await driver.quit();
   }
 }
 
