@@ -73,6 +73,61 @@ const connectDB = async () => {
   }
 });
 
+(async function deleteCartTest() {
+  let driver;
+  try {
+    driver = await new Builder().forBrowser("chrome").build();
+    // Step 1: Navigate to the login page
+    await driver.get("http://localhost:3000/login"); // Adjust the URL to your login page
+
+    // Step 2: Perform login
+    await driver.findElement(By.name("email")).sendKeys("test@test.com");
+    await driver.findElement(By.name("password")).sendKeys("123");
+    await driver.findElement(By.css('button[type="submit"]')).click();
+
+    // Step 3: Wait for redirection after login
+    await driver.wait(until.urlContains("/"), 10000);
+
+    // Step 4: Find the first product's 'Add to Cart' button and click it
+    await driver.wait(
+      until.elementLocated(By.css(".product-item .card__actions form button")),
+      10000
+    );
+    const addToCartButton = await driver.findElement(
+      By.css(".product-item .card__actions form button")
+    );
+    await addToCartButton.click();
+    // Step 5: Wait for redirection to the cart page
+    await driver.wait(until.urlContains("/cart"), 10000);
+
+    // Step 6: Delete the product from the cart
+    const deleteButton = await driver.findElement(By.css(".cart__item .btn"));
+    await deleteButton.click();
+
+    // Step 7: Check if the cart is empty by verifying the presence of "No Products in Cart!" message
+
+    const emptyCartMessage = await driver.findElement(
+      By.css("main .emptyCart")
+    );
+    const isCartEmpty = await emptyCartMessage.isDisplayed();
+
+    // Assert that the cart is empty
+    assert.strictEqual(
+      isCartEmpty,
+      true,
+      "Test Failed: The cart is not empty."
+    );
+    console.log("Test Passed: The cart is empty.");
+  } catch (err) {
+    console.error(err);
+  } finally {
+    await driver.quit();
+  }
+})();
+
+
+
+
 
 
 async function makeOrderTest() {

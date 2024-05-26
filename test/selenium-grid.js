@@ -55,7 +55,7 @@ const connectDB = async () => {
 const { Builder, By, until } = require("selenium-webdriver");
 const assert = require("assert");
 const User = require("../models/user.js");
-const Order = require("../models/order.js");
+const Order = require("..order.js");
 
 // check if all router work in the site
 async function routerTests(browser) {
