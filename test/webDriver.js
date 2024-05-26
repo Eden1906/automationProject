@@ -16,10 +16,9 @@ const connectDB = async () => {
   }
 };
 
-(async function addToCartTest() {
+async function addToCartTest() {
   // Connect to the local WebDriver
-  let driver = await new Builder().forBrowser("chrome").build();
-
+  let driver;
   // Connect to the Database
   await connectDB();
 
@@ -28,6 +27,8 @@ const connectDB = async () => {
   const userBeforeUpdatedCart = user.cart.items;
 
   try {
+    driver = await new Builder().forBrowser("chrome").build();
+
     // Step 1: Navigate to the login page
     await driver.get("http://localhost:3000/login"); // Adjust the URL to your login page
 
@@ -69,11 +70,10 @@ const connectDB = async () => {
   } finally {
     await driver.quit();
     await mongoose.connection.close();
-    process.exit(0);
   }
-});
+}
 
-(async function deleteCartTest() {
+async function deleteCartTest() {
   let driver;
   try {
     driver = await new Builder().forBrowser("chrome").build();
@@ -123,7 +123,7 @@ const connectDB = async () => {
   } finally {
     await driver.quit();
   }
-})();
+}
 
 async function makeOrderTest() {
   // Create a local instance of the Chrome WebDriver
@@ -188,7 +188,7 @@ async function makeOrderTest() {
 
 //makeOrderTest()
 
-(async function addProductTest() {
+async function addProductTest() {
   let driver;
   try {
     driver = await new Builder().forBrowser("chrome").build();
@@ -262,9 +262,9 @@ async function makeOrderTest() {
       await driver.quit();
     }
   }
-});
+}
 
-(async function signupTest() {
+async function signupTest() {
   let driver;
 
   try {
@@ -316,9 +316,9 @@ async function makeOrderTest() {
       await driver.quit();
     }
   }
-});
+}
 
-(async function detailOfProductTest() {
+async function detailOfProductTest() {
   let driver;
   try {
     driver = await new Builder().forBrowser("chrome").build();
@@ -349,9 +349,9 @@ async function makeOrderTest() {
       await driver.quit();
     }
   }
-});
+}
 
-(async function detailOfProductTestloggedin() {
+async function detailOfProductTestloggedin() {
   let driver;
   try {
     driver = await new Builder().forBrowser("chrome").build();
@@ -395,9 +395,9 @@ async function makeOrderTest() {
       await driver.quit();
     }
   }
-});
+}
 
-(async function deleteProductTest() {
+async function deleteProductTest() {
   let driver;
   try {
     driver = await new Builder().forBrowser("chrome").build();
@@ -492,9 +492,9 @@ async function makeOrderTest() {
       await driver.quit();
     }
   }
-});
+}
 
-(async function editProductTest() {
+async function editProductTest() {
   let driver;
   try {
     driver = await new Builder().forBrowser("chrome").build();
@@ -658,4 +658,22 @@ async function makeOrderTest() {
       await driver.quit();
     }
   }
-});
+}
+
+(async function runAllTest() {
+  try {
+    await addToCartTest();
+    await deleteCartTest();
+    await makeOrderTest();
+    await addProductTest();
+    await editProductTest();
+    await deleteProductTest();
+    await detailOfProductTest();
+    await detailOfProductTestloggedin();
+    await signupTest();
+  } catch (err) {
+    console.error("failed run all test", err);
+  } finally {
+    // process.exit(0);
+  }
+})();
