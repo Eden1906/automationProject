@@ -2,7 +2,7 @@ const { Builder, By, until } = require("selenium-webdriver");
 const assert = require("assert");
 const User = require("../models/user"); // Adjust the path to your User model
 const mongoose = require("mongoose");
-const Order = require('../models/Order');
+const Order = require("../models/order");
 
 const MONGODB_URI =
   "mongodb+srv://shopProject:Maccabi@cluster0.rjis4tp.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
@@ -125,14 +125,9 @@ const connectDB = async () => {
   }
 })();
 
-
-
-
-
-
 async function makeOrderTest() {
   // Create a local instance of the Chrome WebDriver
-  let driver = await new Builder().forBrowser('chrome').build();
+  let driver = await new Builder().forBrowser("chrome").build();
 
   try {
     // Connect to the DataBase
@@ -142,28 +137,28 @@ async function makeOrderTest() {
     await Order.find().then((orders) => (lastLengthOfOrders = orders.length));
 
     // Step 1: Navigate to the login page
-    await driver.get('http://localhost:3000/login'); // Adjust the URL to your login page
+    await driver.get("http://localhost:3000/login"); // Adjust the URL to your login page
 
     // Step 2: Perform login
-    await driver.findElement(By.name('email')).sendKeys('test@test.com');
-    await driver.findElement(By.name('password')).sendKeys('123');
+    await driver.findElement(By.name("email")).sendKeys("test@test.com");
+    await driver.findElement(By.name("password")).sendKeys("123");
     await driver.findElement(By.css('button[type="submit"]')).click();
 
     // Step 3: Wait for redirection after login
-    await driver.wait(until.urlContains('/'), 10000);
+    await driver.wait(until.urlContains("/"), 10000);
 
     // Step 4: Find the first product's 'Add to Cart' button and click it
     await driver.wait(
-      until.elementLocated(By.css('.product-item .card__actions form button')),
+      until.elementLocated(By.css(".product-item .card__actions form button")),
       10000
     );
     const addToCartButton = await driver.findElement(
-      By.css('.product-item .card__actions form button')
+      By.css(".product-item .card__actions form button")
     );
     await addToCartButton.click();
 
     // Step 5: Wait for redirection to the cart page
-    await driver.wait(until.urlContains('/cart'), 10000);
+    await driver.wait(until.urlContains("/cart"), 10000);
 
     // Step 6: Click on Order Now!
     const orderNowButton = await driver.findElement(
@@ -176,12 +171,12 @@ async function makeOrderTest() {
 
     assert(
       afterOrderLength > lastLengthOfOrders,
-      'Order was not added successfully'
+      "Order was not added successfully"
     );
 
-    console.log('Order added successfully!');
+    console.log("Order added successfully!");
   } catch (error) {
-    console.log('Error occurred:', error);
+    console.log("Error occurred:", error);
   } finally {
     if (driver) {
       await driver.quit();
@@ -193,11 +188,10 @@ async function makeOrderTest() {
 
 //makeOrderTest()
 
-
 (async function addProductTest() {
   let driver;
   try {
-    driver = await new Builder().forBrowser('chrome').build();
+    driver = await new Builder().forBrowser("chrome").build();
 
     // Step 1: Navigate to the login page
     await driver.get("http://localhost:3000/login");
@@ -270,7 +264,6 @@ async function makeOrderTest() {
   }
 });
 
-
 (async function signupTest() {
   let driver;
 
@@ -325,11 +318,10 @@ async function makeOrderTest() {
   }
 });
 
-
 (async function detailOfProductTest() {
   let driver;
   try {
-    driver = await new Builder().forBrowser('chrome').build();
+    driver = await new Builder().forBrowser("chrome").build();
     await driver.get("http://localhost:3000/");
     // Step 1: Find the first product and extract its ID
     const firstProductLink = await driver.findElement(
@@ -358,7 +350,6 @@ async function makeOrderTest() {
     }
   }
 });
-
 
 (async function detailOfProductTestloggedin() {
   let driver;
@@ -405,7 +396,6 @@ async function makeOrderTest() {
     }
   }
 });
-
 
 (async function deleteProductTest() {
   let driver;
