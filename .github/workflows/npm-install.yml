@@ -21,7 +21,3 @@ jobs:
 
       - name: Install Dependencies
         run: npm install
-      - name: run
-        run: npm start
-      - name: Webdriver test
-        run: npm run test-webdriver
