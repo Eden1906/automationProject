@@ -3,36 +3,39 @@ name: Test and Run Web App
 on:
   push:
     branches:
-      - main 
+      - main
 
 jobs:
   test-and-run:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-        uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2 # Corrected indentation
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: "18.16.0"
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18.16.0"
 
-    - name: Start application
-      run: |
-        nohup npm start &  # Start the application in the background
-        sleep 15  # Wait for the server to start
+      - name: Install dependencies
+        run: npm install
 
-    - name: Check website status
-      run: |
-        STATUS_CODE=$(curl -o /dev/null -s -w "%{http_code}\n" http://localhost:3000)
-        if [ $STATUS_CODE -ne 200 ]; then
-          echo "Website is not up. Exiting."
-          exit 1
-        else
-          echo "Website is up."
-        fi
+      - name: Start application
+        run: |
+          nohup npm start &  # Start the application in the background
+          sleep 15  # Wait for the server to start
 
-    - name: Stop application
-      run: |
-        kill $(lsof -t -i:3000)  # Kill the process running on port 3000
+      - name: Check website status
+        run: |
+          STATUS_CODE=$(curl -o /dev/null -s -w "%{http_code}\n" http://localhost:3000)
+          if [ $STATUS_CODE -ne 200 ]; then
+            echo "Website is not up. Exiting."
+            exit 1
+          else
+            echo "Website is up."
+          fi
+
+      - name: Stop application
+        run: |
+          kill $(lsof -t -i:3000)  # Kill the process running on port 3000
