@@ -758,3 +758,4 @@ async function signupTest(browser) {
     process.exit(0);
   }
 })();
+console.log("git");
